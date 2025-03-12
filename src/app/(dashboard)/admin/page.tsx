@@ -4,18 +4,17 @@ import CountChartContainer from "@/components/CountChartContainer";
 import EventCalendarContainer from "@/components/EventCalendarContainer";
 import FinanceChart from "@/components/FinanceChart";
 import UserCard from "@/components/UserCard";
+import { NextPage } from "next";
 
-// This is the correct way to type a page component in Next.js App Router
-export default function AdminPage({
-  searchParams = {},
-}: {
-  params: {}; // This is required by Next.js App Router
-  searchParams?: { [key: string]: string | string[] | undefined };
-}) {
-  // If your EventCalendarContainer expects a different format, convert it here
+// Use the generic type and avoid specifying the params type directly
+const AdminPage: NextPage = ({ 
+  searchParams = {} 
+}: { 
+  searchParams?: { [key: string]: string | string[] | undefined } 
+}) => {
+  // Convert the searchParams to the format expected by EventCalendarContainer
   const formattedSearchParams: { [keys: string]: string | undefined } = {};
   
-  // Convert any array values to string
   Object.entries(searchParams).forEach(([key, value]) => {
     formattedSearchParams[key] = Array.isArray(value) ? value.join(',') : value;
   });
@@ -54,4 +53,6 @@ export default function AdminPage({
       </div>
     </div>
   );
-}
+};
+
+export default AdminPage;
