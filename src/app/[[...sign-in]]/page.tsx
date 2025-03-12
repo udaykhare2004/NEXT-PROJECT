@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-const loginPage = () => {
+const LoginPage = () => {
 
     const { isLoaded, isSignedIn, user} = useUser()
     const router = useRouter();
@@ -53,4 +53,4 @@ const loginPage = () => {
     )
 }
 
-export default loginPage
+export default LoginPage
