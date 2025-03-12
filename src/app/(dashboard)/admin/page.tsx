@@ -6,10 +6,11 @@ import FinanceChart from "@/components/FinanceChart";
 import UserCard from "@/components/UserCard";
 
 interface AdminPageProps {
-  searchParams: { [key: string]: string | string[] | undefined };
+  searchParams?: Record<string, string | string[] | undefined>;
 }
 
-const AdminPage = ({ searchParams }: AdminPageProps) => {
+const AdminPage = ({ searchParams = {} }: AdminPageProps) => {
+  // ✅ Convert searchParams to match the expected type
   const formattedSearchParams: { [key: string]: string | undefined } = Object.fromEntries(
     Object.entries(searchParams).map(([key, value]) => [key, Array.isArray(value) ? value.join(",") : value])
   );
@@ -43,7 +44,7 @@ const AdminPage = ({ searchParams }: AdminPageProps) => {
       </div>
       {/* RIGHT */}
       <div className="w-full lg:w-1/3 flex flex-col gap-8">
-        {/* Pass searchParams as props */}
+        {/* ✅ Pass formattedSearchParams */}
         <EventCalendarContainer searchParams={formattedSearchParams} />
         <Announcements />
       </div>
@@ -52,3 +53,5 @@ const AdminPage = ({ searchParams }: AdminPageProps) => {
 };
 
 export default AdminPage;
+
+
