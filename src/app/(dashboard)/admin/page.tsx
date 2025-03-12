@@ -5,17 +5,20 @@ import EventCalendarContainer from "@/components/EventCalendarContainer";
 import FinanceChart from "@/components/FinanceChart";
 import UserCard from "@/components/UserCard";
 
-// Define the type for Next.js App Router page component
-interface PageProps {
-  params: { [key: string]: string };
+// This is the correct way to type a page component in Next.js App Router
+export default function AdminPage({
+  searchParams = {},
+}: {
+  params: {}; // This is required by Next.js App Router
   searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-export default function AdminPage({ searchParams = {} }: PageProps) {
-  // Convert searchParams to match the expected type in EventCalendarContainer
-  const formattedSearchParams: { [key: string]: string | undefined } = Object.fromEntries(
-    Object.entries(searchParams).map(([key, value]) => [key, Array.isArray(value) ? value.join(",") : value])
-  );
+}) {
+  // If your EventCalendarContainer expects a different format, convert it here
+  const formattedSearchParams: { [keys: string]: string | undefined } = {};
+  
+  // Convert any array values to string
+  Object.entries(searchParams).forEach(([key, value]) => {
+    formattedSearchParams[key] = Array.isArray(value) ? value.join(',') : value;
+  });
 
   return (
     <div className="p-4 flex gap-4 flex-col md:flex-row">
@@ -46,10 +49,9 @@ export default function AdminPage({ searchParams = {} }: PageProps) {
       </div>
       {/* RIGHT */}
       <div className="w-full lg:w-1/3 flex flex-col gap-8">
-        <EventCalendarContainer searchParams={formattedSearchParams} />
+        <EventCalendarContainer searchParams={formattedSearchParams}/>
         <Announcements />
       </div>
     </div>
   );
 }
-
