@@ -1,15 +1,24 @@
-import FormModal from "@/components/FormModal";
+import FormContainer from "@/components/FormContainer";
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import Image from "next/image";
 import prisma from "@/lib/prisma";
-import { Class, Prisma, Teacher } from "@prisma/client";
 import { ITEM_PER_PAGE } from "@/lib/settings";
-import { role } from "@/lib/utils";
-import FormContainer from "@/components/FormContainer";
+import { Class, Prisma, Teacher } from "@prisma/client";
+import Image from "next/image";
+import { auth } from "@clerk/nextjs/server";
 
 type ClassList = Class & { supervisor: Teacher };
+
+const ClassListPage = async ({
+  searchParams,
+}: {
+  searchParams: Record<string, string | undefined>;
+}) => {
+
+const { sessionClaims } = await auth();
+const role = (sessionClaims?.metadata as { role?: string })?.role;
+
 
 const columns = [
   {
@@ -65,35 +74,31 @@ const renderRow = (item: ClassList) => (
   </tr>
 );
 
-const ClassListPage = async ({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) => {
-  // ✅ Fixed searchParams Destructuring
-  const page = searchParams?.page ?? "1";
-  const p = parseInt(page);
+  const { page, ...queryParams } = searchParams;
 
-  // ✅ Safe Query Handling
+  const p = page ? parseInt(page) : 1;
+
+  // URL PARAMS CONDITION
+
   const query: Prisma.ClassWhereInput = {};
-  if (searchParams) {
-    Object.entries(searchParams).forEach(([key, value]) => {
+
+  if (queryParams) {
+    for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          case "search":
-            query.name = { contains: value, mode: "insensitive" };
-            break;
           case "supervisorId":
             query.supervisorId = value;
+            break;
+          case "search":
+            query.name = { contains: value, mode: "insensitive" };
             break;
           default:
             break;
         }
       }
-    });
+    }
   }
 
-  // ✅ Await Prisma Queries Safely
   const [data, count] = await prisma.$transaction([
     prisma.class.findMany({
       where: query,

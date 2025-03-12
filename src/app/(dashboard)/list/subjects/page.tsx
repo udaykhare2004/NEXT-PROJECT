@@ -1,15 +1,18 @@
 import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import TableSearch from "@/components/TableSearch";
-import { role } from "@/lib/utils";
 import Image from "next/image";
 import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { ITEM_PER_PAGE } from "@/lib/settings";
 import { Subject,Teacher } from "@prisma/client";
 import FormContainer from "@/components/FormContainer";
+import { auth } from "@clerk/nextjs/server";
 
 type SubjectList = Subject & {teachers:Teacher[]}
+
+const { sessionClaims } = await auth();
+const role = (sessionClaims?.metadata as { role?: string })?.role;
 
 const columns = [
   {
@@ -50,7 +53,7 @@ const renderRow = (item: SubjectList) => (
 const SubjectListPage = async ({
   searchParams,
 }: {
-  searchParams: {[key:string] : string | undefined};
+  searchParams: Record<string, string | undefined>;
 }) => {
  const {page, ...queryParams} = searchParams
  

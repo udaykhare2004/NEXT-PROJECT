@@ -102,7 +102,7 @@ const renderRow = (item: TeacherList) => {
 const TeacherListPage = async ({
   searchParams,
 }: {
-  searchParams: {[key:string] : string | undefined};
+  searchParams: Record<string, string | undefined>;
 }) => {
  const {page, ...queryParams} = searchParams
  

@@ -19,7 +19,7 @@ type ExamList = Exam & {
 const ExamListPage = async ({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | undefined };
+  searchParams: Record<string, string | undefined>;
 }) => {
 
 const { userId, sessionClaims } = await auth();
