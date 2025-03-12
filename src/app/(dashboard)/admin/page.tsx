@@ -4,17 +4,21 @@ import CountChartContainer from "@/components/CountChartContainer";
 import EventCalendarContainer from "@/components/EventCalendarContainer";
 import FinanceChart from "@/components/FinanceChart";
 import UserCard from "@/components/UserCard";
+import { Params } from "next/dist/server/request/params";
 
-interface AdminPageProps {
-  searchParams?: Record<string, string | string[] | undefined>;
-}
 
-const AdminPage = ({ searchParams = {} }: AdminPageProps) => {
-  // ✅ Convert searchParams to match the expected type
+// Update the props to match Next.js Page component interface
+type SearchParams = { [key: string]: string | string[] | undefined };
+
+export default function AdminPage({
+  searchParams = {},
+}: {
+  params?: Params;
+  searchParams?: SearchParams;
+}) {
   const formattedSearchParams: { [key: string]: string | undefined } = Object.fromEntries(
     Object.entries(searchParams).map(([key, value]) => [key, Array.isArray(value) ? value.join(",") : value])
   );
-
   return (
     <div className="p-4 flex gap-4 flex-col md:flex-row">
       {/* LEFT */}
@@ -44,14 +48,11 @@ const AdminPage = ({ searchParams = {} }: AdminPageProps) => {
       </div>
       {/* RIGHT */}
       <div className="w-full lg:w-1/3 flex flex-col gap-8">
-        {/* ✅ Pass formattedSearchParams */}
         <EventCalendarContainer searchParams={formattedSearchParams} />
         <Announcements />
       </div>
     </div>
   );
-};
-
-export default AdminPage;
+}
 
 
