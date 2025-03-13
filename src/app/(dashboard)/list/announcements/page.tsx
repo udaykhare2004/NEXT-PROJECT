@@ -8,19 +8,14 @@ import { Announcement, Class, Prisma } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
+
 type AnnouncementList = Announcement & { class: Class };
 
-// Define proper Next.js page props type
-interface PageProps {
-  params: Record<string, string>;
-  searchParams: Record<string, string | string[] | undefined>;
+interface AnnouncementListPageProps {
+  searchParams: { [key: string]: string | undefined };
 }
 
-export default async function AnnouncementListPage({ 
-  searchParams = {} 
-}: PageProps) {
-  // Type assertion to help TypeScript understand the shape
-  const typedSearchParams = searchParams as Record<string, string | undefined>;
+const AnnouncementListPage = async ({ searchParams }: AnnouncementListPageProps) => {
   
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
@@ -72,13 +67,12 @@ export default async function AnnouncementListPage({
       </td>
     </tr>
   );
-  
-  // Use the typed version of searchParams
-  const { page, ...queryParams } = typedSearchParams;
+  const { page, ...queryParams } = searchParams;
 
   const p = page ? parseInt(page) : 1;
 
   // URL PARAMS CONDITION
+
   const query: Prisma.AnnouncementWhereInput = {};
 
   if (queryParams) {
@@ -96,6 +90,7 @@ export default async function AnnouncementListPage({
   }
 
   // ROLE CONDITIONS
+
   const roleConditions = {
     teacher: { lessons: { some: { teacherId: currentUserId! } } },
     student: { students: { some: { id: currentUserId! } } },
@@ -149,4 +144,6 @@ export default async function AnnouncementListPage({
       <Pagination page={p} count={count} />
     </div>
   );
-}
+};
+
+export default AnnouncementListPage;
