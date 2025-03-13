@@ -16,6 +16,8 @@ const AnnouncementListPage = async ({
 }: {
   searchParams:Promise<{ [key: string]: string | undefined }>;
 }) => {
+
+  const resolvedSearchParams = await searchParams;
   
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
@@ -67,7 +69,7 @@ const AnnouncementListPage = async ({
       </td>
     </tr>
   );
-  const { page, ...queryParams } = await searchParams;
+  const { page, ...queryParams } = await resolvedSearchParams;
 
   const p = page ? parseInt(page) : 1;
 
