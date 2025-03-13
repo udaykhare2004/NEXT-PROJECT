@@ -11,11 +11,16 @@ import { auth } from "@clerk/nextjs/server";
 
 type AnnouncementList = Announcement & { class: Class };
 
-interface AnnouncementListPageProps {
-  searchParams: { [key: string]: string | undefined };
+interface SearchParams {
+  page?: string;
+  search?: string;
 }
 
-const AnnouncementListPage = async ({ searchParams }: AnnouncementListPageProps) => {
+const AnnouncementListPage = async ({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) => {
   
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
