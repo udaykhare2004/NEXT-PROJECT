@@ -10,7 +10,15 @@ import { auth } from "@clerk/nextjs/server";
 
 type AnnouncementList = Announcement & { class: Class };
 
-export default async function AnnouncementListPage({ searchParams = {} }) {
+// Define proper Next.js page props type
+interface PageProps {
+  params: Record<string, string>;
+  searchParams: Record<string, string | string[] | undefined>;
+}
+
+export default async function AnnouncementListPage({ 
+  searchParams = {} 
+}: PageProps) {
   // Type assertion to help TypeScript understand the shape
   const typedSearchParams = searchParams as Record<string, string | undefined>;
   
