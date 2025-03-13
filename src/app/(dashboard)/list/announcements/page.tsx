@@ -11,15 +11,10 @@ import { auth } from "@clerk/nextjs/server";
 
 type AnnouncementList = Announcement & { class: Class };
 
-interface SearchParams {
-  page?: string;
-  search?: string;
-}
-
 const AnnouncementListPage = async ({
   searchParams,
 }: {
-  searchParams: SearchParams;
+  searchParams:Promise<{ [key: string]: string | undefined }>;
 }) => {
   
   const { userId, sessionClaims } = await auth();
@@ -72,7 +67,7 @@ const AnnouncementListPage = async ({
       </td>
     </tr>
   );
-  const { page, ...queryParams } = searchParams;
+  const { page, ...queryParams } = await searchParams;
 
   const p = page ? parseInt(page) : 1;
 
