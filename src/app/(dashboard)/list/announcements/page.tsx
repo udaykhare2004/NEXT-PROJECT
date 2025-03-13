@@ -8,19 +8,20 @@ import { Announcement, Class, Prisma } from "@prisma/client";
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 
-
 type AnnouncementList = Announcement & { class: Class };
 
 const AnnouncementListPage = async ({
   searchParams,
 }: {
-  searchParams:Promise<{ [key: string]: string | undefined }>;
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }) => {
-  
+  // Await the searchParams promise to get the actual parameters
+  const resolvedSearchParams = await searchParams;
+
   const { userId, sessionClaims } = await auth();
   const role = (sessionClaims?.metadata as { role?: string })?.role;
-  const currentUserId = userId;
-  
+  const currentUserId = await userId;
+
   const columns = [
     {
       header: "Title",
@@ -44,7 +45,7 @@ const AnnouncementListPage = async ({
         ]
       : []),
   ];
-  
+
   const renderRow = (item: AnnouncementList) => (
     <tr
       key={item.id}
@@ -67,12 +68,12 @@ const AnnouncementListPage = async ({
       </td>
     </tr>
   );
-  const { page, ...queryParams } = await searchParams;
+
+  const { page, ...queryParams } =  resolvedSearchParams; // Use the resolved searchParams
 
   const p = page ? parseInt(page) : 1;
 
   // URL PARAMS CONDITION
-
   const query: Prisma.AnnouncementWhereInput = {};
 
   if (queryParams) {
@@ -90,7 +91,6 @@ const AnnouncementListPage = async ({
   }
 
   // ROLE CONDITIONS
-
   const roleConditions = {
     teacher: { lessons: { some: { teacherId: currentUserId! } } },
     student: { students: { some: { id: currentUserId! } } },
